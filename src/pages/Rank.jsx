@@ -1,19 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import characters from "../data/characters";
 import MenuModal from "../components/MenuModal";
+import { supabase } from "../lib/supabase";
 
 export default function Rank(){
 
 const navigate = useNavigate();
 const [menuOpen,setMenuOpen] = useState(false);
+const [ranking,setRanking] = useState([]);
 
-/* 仮ランキング */
-const ranking = characters.map((m,i)=>({
-...m,
-rank:i+1,
-move:i%3===0?"up":i%3===1?"down":"stay"
-}));
+useEffect(()=>{
+loadRanking();
+},[]);
+
+
+// ⭐今週開始
+function getWeekStart(){
+
+const now = new Date();
+const day = now.getDay();
+
+const diff = now.getDate() - day;
+const start = new Date(now.setDate(diff));
+
+start.setHours(0,0,0,0);
+
+return start.toISOString();
+}
+
+
+// ⭐ランキング取得（DB）
+async function loadRanking(){
+
+const start = getWeekStart();
+
+const { data } = await supabase
+.from("messages")
+.select("character_id, created_at")
+.gte("created_at", start);
+
+if(!data) return;
+
+const counts = {};
+
+data.forEach(m=>{
+counts[m.character_id] = (counts[m.character_id] || 0) + 1;
+});
+
+// 並び替え
+const sorted = Object.entries(counts)
+.sort((a,b)=>b[1]-a[1]);
+
+// 前回順位（簡易保存）
+const prev = JSON.parse(localStorage.getItem("prevRank") || "{}");
+
+const result = sorted.map(([id,count],index)=>{
+
+const char = characters.find(c=>c.id === id);
+
+// 矢印判定
+let move = "stay";
+if(prev[id]){
+if(prev[id] > index+1) move = "up";
+if(prev[id] < index+1) move = "down";
+}
+
+// 保存用
+prev[id] = index+1;
+
+return {
+...char,
+rank:index+1,
+count,
+move
+};
+
+});
+
+localStorage.setItem("prevRank", JSON.stringify(prev));
+
+setRanking(result);
+}
+
 
 return(
 
@@ -26,7 +95,6 @@ padding:"15px"
 }}>
 
 {/* HEADER */}
-
 <div style={{
 display:"flex",
 alignItems:"center",
@@ -34,12 +102,7 @@ justifyContent:"space-between",
 marginBottom:"15px"
 }}>
 
-<div
-onClick={()=>navigate(-1)}
-style={{cursor:"pointer"}}
->
-←
-</div>
+<div onClick={()=>navigate(-1)}>←</div>
 
 <div style={{
 fontSize:"20px",
@@ -48,17 +111,12 @@ fontWeight:"bold"
 今週のメンバーランキング
 </div>
 
-<div
-onClick={()=>setMenuOpen(true)}
-style={{cursor:"pointer"}}
->
-≡
-</div>
+<div onClick={()=>setMenuOpen(true)}>≡</div>
 
 </div>
+
 
 {/* LIST */}
-
 {ranking.map(m=>{
 
 let medal="";
@@ -102,7 +160,6 @@ boxShadow:"0 2px 4px rgba(0,0,0,0.08)"
 >
 
 {/* RANK */}
-
 <div style={{
 width:"55px",
 fontWeight:"bold",
@@ -112,7 +169,6 @@ fontSize:"18px"
 </div>
 
 {/* IMAGE */}
-
 <img
 src={m.img}
 style={{
@@ -125,34 +181,22 @@ objectFit:"cover"
 />
 
 {/* INFO */}
-
 <div style={{flex:1}}>
-
-<div style={{fontWeight:"bold"}}>
-{m.name}
-</div>
-
-<div style={{
-fontSize:"12px",
-color:"#777"
-}}>
+<div style={{fontWeight:"bold"}}>{m.name}</div>
+<div style={{fontSize:"12px",color:"#777"}}>
 {m.line}
 </div>
-
 </div>
 
 {/* MOVE */}
-
 <div style={{
 fontSize:"18px",
 width:"30px",
 textAlign:"right"
 }}>
-
 {m.move==="up" && "↑"}
 {m.move==="down" && "↓"}
 {m.move==="stay" && "→"}
-
 </div>
 
 </div>
@@ -165,6 +209,5 @@ textAlign:"right"
 
 </div>
 
-)
-
+);
 }

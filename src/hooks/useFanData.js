@@ -6,7 +6,7 @@ export default function useFanData(){
 const [members] = useState(characters);
 const [pins,setPins] = useState([]);
 const [recent,setRecent] = useState([]);
-const [points,setPoints] = useState(30);
+const [point,setPoint] = useState(30);
 
 function pinMember(memberId){
 
@@ -44,7 +44,7 @@ return{
 members,
 pins,
 recent,
-points,
+point,
 pinMember,
 openChat,
 buildRanking

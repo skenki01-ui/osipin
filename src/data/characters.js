@@ -8,8 +8,8 @@ img:"/characters/teo.png"
 },
 
 {
-id:"rei",
-name:"レイ",
+id:"jin",
+name:"ジン",
 line:"クールな相談役",
 img:"/characters/rei.png"
 },

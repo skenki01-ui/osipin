@@ -1,35 +1,92 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import Chat from "./pages/Chat";
-import Rank from "./pages/Rank";
-import Pin from "./pages/Pin";
-import Cards from "./pages/Cards";
+export default function Register(){
 
-// ⭐追加
-import Success from "./pages/Success";
+const navigate = useNavigate();
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Register />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
+return(
 
-        {/* チャット */}
-        <Route path="/chat/:id" element={<Chat />} />
+<div style={{
+width:"375px",
+margin:"0 auto",
+minHeight:"100vh",
+display:"flex",
+flexDirection:"column",
+justifyContent:"center",
+alignItems:"center",
+background:"#ffeaf4",
+padding:"20px",
+boxSizing:"border-box"
+}}>
 
-        <Route path="/rank" element={<Rank />} />
-        <Route path="/pin" element={<Pin />} />
-        <Route path="/cards" element={<Cards />} />
+<div style={{marginBottom:"20px",fontSize:"18px",fontWeight:"bold"}}>
+ひそひそ
+</div>
 
-        {/* ⭐Stripe用 */}
-        <Route path="/success" element={<Success />} />
-        <Route path="/cancel" element={<div>キャンセルしました</div>} />
-      </Routes>
-    </BrowserRouter>
-  );
+<input
+placeholder="なんて呼ばれたい？"
+style={{
+width:"100%",
+padding:"12px",
+borderRadius:"10px",
+border:"1px solid #ccc",
+marginBottom:"10px"
+}}
+onChange={(e)=>{
+localStorage.setItem("name",e.target.value);
+}}
+/>
+
+<button
+onClick={()=>navigate("/home")}
+style={{
+width:"100%",
+padding:"12px",
+borderRadius:"10px",
+border:"none",
+background:"#ff4d4f",
+color:"#fff",
+marginBottom:"20px"
+}}
+>
+はじめる
+</button>
+
+{/* ⭐PWA説明 */}
+<div style={{
+fontSize:"11px",
+textAlign:"center",
+marginBottom:"10px"
+}}>
+📱 ホーム画面に追加するとアプリのように使えます
+</div>
+
+{/* ⭐法律リンク */}
+<div style={{
+fontSize:"11px",
+textAlign:"center"
+}}>
+
+<span
+onClick={()=>navigate("/terms")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+利用規約
+</span>
+
+{" / "}
+
+<span
+onClick={()=>navigate("/tokushoho")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+特商法
+</span>
+
+</div>
+
+</div>
+
+);
 }

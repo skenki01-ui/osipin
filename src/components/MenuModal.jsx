@@ -1,132 +1,141 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function MenuModal({ open, onClose }) {
 
-if(!open) return null;
+  const navigate = useNavigate();
 
-return(
+  if (!open) return null;
 
-<div style={{
-position:"fixed",
-top:0,
-left:0,
-width:"100%",
-height:"100%",
-background:"rgba(0,0,0,0.4)",
-display:"flex",
-justifyContent:"center",
-alignItems:"center",
-zIndex:1000
-}}>
+  return (
+    <div style={{
+      position:"fixed",
+      top:0,
+      left:0,
+      width:"100%",
+      height:"100%",
+      background:"rgba(0,0,0,0.4)",
+      display:"flex",
+      justifyContent:"center",
+      alignItems:"center"
+    }}>
 
-<div style={{
-width:"340px",
-background:"#fff",
-borderRadius:"14px",
-padding:"20px"
-}}>
+      <div style={{
+        width:"300px",
+        background:"#fff",
+        borderRadius:"12px",
+        padding:"20px",
+        display:"flex",
+        flexDirection:"column",
+        gap:"10px"
+      }}>
 
-{/* TITLE */}
+        <div style={{fontWeight:"bold"}}>
+          メニュー
+        </div>
 
-<div style={{
-fontWeight:"bold",
-fontSize:"18px",
-marginBottom:"15px"
-}}>
-≡ メニュー
-</div>
+        {/* ポイント */}
+        <button
+          onClick={()=>{
+            navigate("/pay");
+            onClose();
+          }}
+          style={{
+            padding:"12px",
+            borderRadius:"10px",
+            border:"none",
+            background:"#ff4d4f",
+            color:"#fff"
+          }}
+        >
+          💰 ポイントを買う
+        </button>
 
-{/* POINT */}
+        {/* サブスク */}
+        <button
+          onClick={()=>alert("サブスクは次で実装")}
+          style={{
+            padding:"12px",
+            borderRadius:"10px",
+            border:"none",
+            background:"#333",
+            color:"#fff"
+          }}
+        >
+          📅 月額で使い放題
+        </button>
 
-<div style={{
-marginBottom:"18px"
-}}>
+        {/* VIP */}
+        <button
+          onClick={()=>alert("特別なメッセージを送れます")}
+          style={{
+            padding:"12px",
+            borderRadius:"10px",
+            background:"#fff",
+            border:"1px solid #ccc"
+          }}
+        >
+          ⭐ VIP（特別メッセージ）
+        </button>
 
-<div style={{fontWeight:"bold"}}>
-ポイント
-</div>
+        {/* カード */}
+        <button
+          onClick={()=>{
+            navigate("/cards");
+            onClose();
+          }}
+          style={{
+            padding:"12px",
+            borderRadius:"10px",
+            border:"1px solid #ccc",
+            background:"#fff"
+          }}
+        >
+          🧾 カードを見る
+        </button>
 
-<div style={{fontSize:"13px",color:"#666",marginTop:"6px"}}>
-1p = 10円
-</div>
+        {/* アプリ説明 */}
+        <button
+          onClick={()=>{
+            navigate("/about");
+            onClose();
+          }}
+          style={{
+            padding:"12px",
+            borderRadius:"10px",
+            border:"1px solid #ccc",
+            background:"#fff"
+          }}
+        >
+          ℹ️ このアプリについて
+        </button>
 
-<div style={{
-marginTop:"10px",
-fontSize:"14px",
-lineHeight:"1.8"
-}}>
-100円 = 10p<br/>
-500円 = 50p<br/>
-1000円 = 100p<br/>
-3000円 = 300p<br/>
-5000円 = 500p<br/>
-10000円 = 1000p
-</div>
+        {/* PWA */}
+        <button
+          onClick={()=>alert("ホーム画面に追加するとアプリのように使えます")}
+          style={{
+            padding:"12px",
+            borderRadius:"10px",
+            border:"1px solid #ccc",
+            background:"#fff"
+          }}
+        >
+          📱 ホーム画面に追加
+        </button>
 
-</div>
+        <button
+          onClick={onClose}
+          style={{
+            marginTop:"10px",
+            padding:"8px",
+            borderRadius:"10px",
+            border:"1px solid #ccc"
+          }}
+        >
+          閉じる
+        </button>
 
-{/* SUB */}
-
-<div style={{
-marginBottom:"18px"
-}}>
-
-<div style={{fontWeight:"bold"}}>
-サブスク
-</div>
-
-<div style={{
-marginTop:"6px",
-fontSize:"14px"
-}}>
-月額 2000円
-</div>
-
-</div>
-
-{/* ABOUT */}
-
-<div style={{
-marginBottom:"20px"
-}}>
-
-<div style={{fontWeight:"bold"}}>
-このアプリについて
-</div>
-
-<div style={{
-fontSize:"13px",
-color:"#666",
-marginTop:"6px",
-lineHeight:"1.6"
-}}>
-FanChatはキャラクターとチャットを楽しんだり  
-ギフトやカードを集めながら  
-ランキングを楽しめるアプリです。
-</div>
-
-</div>
-
-{/* CLOSE */}
-
-<button
-onClick={onClose}
-style={{
-width:"100%",
-height:"38px",
-borderRadius:"8px",
-border:"none",
-background:"#f1f1f1",
-cursor:"pointer"
-}}
->
-閉じる
-</button>
-
-</div>
-
-</div>
-
-);
-
+      </div>
+    </div>
+  );
 }

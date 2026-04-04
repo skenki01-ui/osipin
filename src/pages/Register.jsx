@@ -43,12 +43,12 @@ alignItems:"center",
 background:"#ffeaf4"
 }}>
 
-<div style={{textAlign:"center"}}>
+<div style={{textAlign:"center",width:"260px"}}>
 
 <h1>OSHIPIN</h1>
 
 <p style={{marginBottom:"20px"}}>
-推しとDMするアプリ
+推しとチャットができるコミュニケーションアプリ
 </p>
 
 <input
@@ -59,7 +59,7 @@ style={{
 padding:"10px",
 borderRadius:"10px",
 border:"1px solid #ccc",
-width:"200px"
+width:"100%"
 }}
 />
 
@@ -70,7 +70,8 @@ type="button"
 onClick={start}
 style={{
 marginTop:"20px",
-padding:"10px 40px",
+padding:"10px",
+width:"100%",
 background:"#ff4fa3",
 border:"none",
 color:"#fff",
@@ -80,6 +81,58 @@ cursor:"pointer"
 >
 はじめる
 </button>
+
+{/* ⭐PWA */}
+<div style={{
+fontSize:"11px",
+marginTop:"15px",
+opacity:0.7
+}}>
+📱 ホーム画面に追加するとアプリのように使えます
+</div>
+
+{/* ⭐規約 */}
+<div style={{
+fontSize:"11px",
+marginTop:"8px",
+lineHeight:"1.6"
+}}>
+
+<span
+onClick={()=>navigate("/terms")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+利用規約
+</span>
+
+{" / "}
+
+<span
+onClick={()=>navigate("/privacy")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+プライバシー
+</span>
+
+{" / "}
+
+<span
+onClick={()=>navigate("/tokushoho")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+特商法
+</span>
+
+{" / "}
+
+<span
+onClick={()=>navigate("/contact")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+お問い合わせ
+</span>
+
+</div>
 
 </div>
 

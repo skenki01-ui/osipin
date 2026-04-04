@@ -18,10 +18,19 @@ const [input,setInput] = useState("");
 const [turn,setTurn] = useState(3);
 const [points,setPoints] = useState(0);
 const [isPinned,setIsPinned] = useState(false);
+const [remainTime,setRemainTime] = useState("");
+const [isSub,setIsSub] = useState(false);
+const [isDay,setIsDay] = useState(false);
 
 const bottomRef = useRef(null);
 
-const userId = localStorage.getItem("user_id");
+/* ID固定 */
+let userId = localStorage.getItem("user_id");
+if(!userId){
+userId = crypto.randomUUID();
+localStorage.setItem("user_id", userId);
+}
+
 const userName = localStorage.getItem("name") || "ねえ";
 
 if(!character){
@@ -32,61 +41,131 @@ useEffect(()=>{
 loadMessages();
 loadPoints();
 checkPin();
+loadTurn();
+checkSub();
+checkDay();
 },[]);
 
 
-// ⭐ピン判定
+// =====================
+// サブスク
+// =====================
+function checkSub(){
+const sub = localStorage.getItem(`sub_${character.id}`);
+if(sub){
+setIsSub(true);
+}
+}
+
+function startSub(){
+const ok = window.confirm("このキャラで使い放題にしますか？（月額2000円）");
+if(!ok) return;
+localStorage.setItem(`sub_${character.id}`, "1");
+setIsSub(true);
+alert("使い放題になりました");
+}
+
+
+// =====================
+// 1DAY
+// =====================
+function checkDay(){
+const end = localStorage.getItem(`day_${character.id}`);
+if(!end) return;
+
+const diff = end - Date.now();
+
+if(diff > 0){
+setIsDay(true);
+}else{
+localStorage.removeItem(`day_${character.id}`);
+setIsDay(false);
+}
+}
+
+function startDay(){
+const end = Date.now() + 24 * 60 * 60 * 1000;
+localStorage.setItem(`day_${character.id}`, end);
+setIsDay(true);
+alert("24時間使い放題になりました");
+}
+
+
+// =====================
+// ターン
+// =====================
+function loadTurn(){
+const saved = JSON.parse(localStorage.getItem("pinTurns") || "{}");
+if(saved[character.id] !== undefined){
+setTurn(saved[character.id]);
+}
+}
+
+
+// =====================
+// ピン
+// =====================
 function checkPin(){
 
 const pins = JSON.parse(localStorage.getItem("pins") || "{}");
-
 const now = Date.now();
 
-const expire = pins[character.id];
+const data = pins[character.id];
+const expire = typeof data === "object" ? data.expire : data;
 
 if(expire && expire > now){
+
 setIsPinned(true);
+
+const diff = expire - now;
+const h = Math.floor(diff / 1000 / 60 / 60);
+const m = Math.floor((diff / 1000 / 60) % 60);
+
+setRemainTime(`${h}h ${m}m`);
+
 }else{
+
 setIsPinned(false);
-}
+setRemainTime("");
 
 }
 
-
-// ⭐ピン購入（←追加済み）
-function buyPin(){
-
-const pins = JSON.parse(localStorage.getItem("pins") || "{}");
-
-const expire = Date.now() + (24 * 60 * 60 * 1000);
-
-pins[character.id] = expire;
-
-localStorage.setItem("pins", JSON.stringify(pins));
-
-setIsPinned(true);
-
-alert("ピン設定完了！");
 }
 
 
-// ⭐ポイント取得
+// =====================
+// ポイント
+// =====================
 async function loadPoints(){
 
-const { data } = await supabase
+if(!userId) return;
+
+let { data, error } = await supabase
 .from("users")
 .select("points")
 .eq("id",userId)
 .single();
 
+if(error){
+
+const { data: newUser } = await supabase
+.from("users")
+.insert({
+id: userId,
+points: 0
+})
+.select()
+.single();
+
+setPoints(newUser.points);
+return;
+}
+
 if(data){
 setPoints(data.points);
 }
-
 }
 
-
-// ⭐ポイント更新
 async function updatePoints(newPoints){
 
 setPoints(newPoints);
@@ -99,7 +178,9 @@ await supabase
 }
 
 
-// ⭐メッセージ取得
+// =====================
+// メッセージ
+// =====================
 async function loadMessages(){
 
 const { data } = await supabase
@@ -123,48 +204,86 @@ setMessages(formatted);
 }
 
 
-// ⭐自動スクロール
+// =====================
+// スクロール
+// =====================
 useEffect(()=>{
 bottomRef.current?.scrollIntoView({behavior:"smooth"});
 },[messages]);
 
 
-// ⭐送信
+// =====================
+// 送信
+// =====================
 async function send(){
 
 if(!input.trim()) return;
 
-if(!isPinned){
+const pins = JSON.parse(localStorage.getItem("pins") || {});
+let p = pins[character.id];
+const now = Date.now();
+
+if(p && !p.started){
+const end = now + 24 * 60 * 60 * 1000;
+pins[character.id] = {...p,started:true,expire:end};
+localStorage.setItem("pins", JSON.stringify(pins));
+p = pins[character.id];
+}
+
+const canUse =
+(p && p.started && p.expire > now)
+|| isSub
+|| isDay;
+
+if(!canUse){
 alert("ピンが必要です");
 return;
 }
 
+const { data } = await supabase
+.from("users")
+.select("points")
+.eq("id",userId)
+.single();
+
+const latestPoints = data?.points || 0;
+
+if(!isSub && !isDay){
+
 if(turn === 0){
-alert("ターンがありません");
+
+if(latestPoints < 5){
+alert("ポイントもターンもありません");
 return;
 }
 
-if(points < 5){
-alert("ポイントが足りません");
-return;
-}
-
-const newPoints = points - 5;
+const newPoints = latestPoints - 5;
 await updatePoints(newPoints);
+
+}else{
+
+setTurn(t => {
+
+const next = t - 1;
+
+const pinTurns = JSON.parse(localStorage.getItem("pinTurns") || {});
+pinTurns[character.id] = next;
+localStorage.setItem("pinTurns", JSON.stringify(pinTurns));
+
+return next;
+
+});
+
+}
+
+}
 
 const currentInput = input;
 
-const userMsg = {role:"user",text:currentInput};
-
-setMessages(prev => [...prev,userMsg]);
-
+setMessages(prev => [...prev,{role:"user",text:currentInput}]);
 setInput("");
 
-setTurn(t => t - 1);
-
-await supabase
-.from("messages")
-.insert({
+await supabase.from("messages").insert({
 user_id:userId,
 character_id:character.id,
 role:"user",
@@ -173,34 +292,41 @@ content:currentInput
 
 setTimeout(async ()=>{
 
-let aiText;
+let fullText = `${userName}と話せて嬉しい`;
 
-if(isPinned){
-aiText = `${userName}と話せて嬉しい`;
-}else{
-aiText = "そうなんだ。";
+setMessages(prev => [...prev,{role:"ai",text:""}]);
+
+let index = 0;
+
+const interval = setInterval(()=>{
+index++;
+setMessages(prev=>{
+const newMessages = [...prev];
+newMessages[newMessages.length - 1].text = fullText.slice(0,index);
+return newMessages;
+});
+if(index >= fullText.length){
+clearInterval(interval);
 }
+},120);
 
-setMessages(prev => [
-...prev,
-{role:"ai",text:aiText}
-]);
-
-await supabase
-.from("messages")
-.insert({
+await supabase.from("messages").insert({
 user_id:userId,
 character_id:character.id,
 role:"ai",
-content:aiText
+content:fullText
 });
 
-},1200);
+checkPin();
+
+},300);
 
 }
 
 
-// ⭐ターン購入
+// =====================
+// ターン購入
+// =====================
 function addTurn(){
 
 if(points < 5){
@@ -209,15 +335,26 @@ return;
 }
 
 const newPoints = points - 5;
-
 updatePoints(newPoints);
 
-setTurn(t => t + 1);
+setTurn(t => {
+
+const next = t + 1;
+
+const pinTurns = JSON.parse(localStorage.getItem("pinTurns") || {});
+pinTurns[character.id] = next;
+localStorage.setItem("pinTurns", JSON.stringify(pinTurns));
+
+return next;
+
+});
 
 }
 
 
-// ⭐ギフト
+// =====================
+// ギフト
+// =====================
 async function gift(price){
 
 if(points < price){
@@ -226,14 +363,11 @@ return;
 }
 
 const newPoints = points - price;
-
 await updatePoints(newPoints);
 
 const card = drawCard(character.id);
 
-await supabase
-.from("cards")
-.insert({
+await supabase.from("cards").insert({
 user_id:userId,
 character_id:character.id,
 card_no:card
@@ -247,12 +381,14 @@ setMessages(prev => [
 
 }
 
-
 function vip(){
 alert("VIPメッセージ送信");
 }
 
 
+// =====================
+// UI
+// =====================
 return(
 
 <div style={{
@@ -264,8 +400,6 @@ flexDirection:"column",
 background:"#ffeaf4"
 }}>
 
-{/* HEADER */}
-
 <div style={{
 display:"flex",
 alignItems:"center",
@@ -275,57 +409,39 @@ background:"#fff",
 borderBottom:"1px solid #eee"
 }}>
 
-<div onClick={()=>navigate("/home")} style={{cursor:"pointer"}}>
-◀︎
-</div>
+<div onClick={()=>navigate("/home")}>←</div>
 
 <div style={{display:"flex",alignItems:"center"}}>
-
 <img src={character.img} style={{
 width:"30px",
 height:"30px",
 borderRadius:"50%",
 marginRight:"8px"
 }}/>
-
 <div>{character.name}</div>
-
 </div>
 
-<div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+<div style={{display:"flex",alignItems:"center",gap:"10px"}}>
 
-<div onClick={()=>setMenuOpen(true)} style={{cursor:"pointer"}}>
-残{turn}｜{points}p ☰
+<div style={{fontSize:"12px"}}>
+{points}p
 </div>
 
-{!isPinned && (
-<button
-onClick={buyPin}
-style={{
-padding:"4px 10px",
-background:"#ff4da6",
-color:"#fff",
-border:"none",
-borderRadius:"8px"
-}}
->
-📍ピン
-</button>
-)}
+<div style={{fontSize:"12px"}}>
+{isSub || isDay ? "使い放題" : isPinned ? `📍 ${remainTime}` : "なし"}
+</div>
+
+<div style={{fontSize:"12px"}}>
+{isSub || isDay ? "" : `残${turn}`}
+</div>
+
+<div onClick={()=>setMenuOpen(true)}>☰</div>
 
 </div>
 
 </div>
 
-
-{/* MESSAGE */}
-
-<div style={{
-flex:1,
-overflow:"auto",
-padding:"10px"
-}}>
-
+<div style={{flex:1,overflow:"auto",padding:"10px"}}>
 {messages.map((m,i)=>(
 
 <div key={i} style={{
@@ -356,45 +472,57 @@ maxWidth:"70%"
 </div>
 
 ))}
-
 <div ref={bottomRef}></div>
-
 </div>
 
+{!isSub && !isDay && turn === 0 && (
+<div style={{padding:"10px",background:"#fff"}}>
 
-{/* TURN購入 */}
+<div style={{marginBottom:"8px",fontSize:"13px"}}>
+もう少し話す？
+</div>
 
-{turn === 0 && (
-
-<div style={{
-padding:"10px",
-textAlign:"center",
-background:"#fff"
-}}>
+<div style={{display:"flex",gap:"8px"}}>
 
 <button onClick={addTurn} style={{
-padding:"8px 20px",
+flex:1,
 background:"#ffa64d",
-border:"none",
+color:"#fff",
+padding:"10px",
 borderRadius:"10px",
-color:"#fff"
+border:"none"
 }}>
 +1ターン 5p
 </button>
 
+<button onClick={startDay} style={{
+flex:1,
+background:"#ff4d4f",
+color:"#fff",
+padding:"10px",
+borderRadius:"10px",
+border:"none"
+}}>
+1DAY
+</button>
+
+<button onClick={startSub} style={{
+flex:1,
+background:"#333",
+color:"#fff",
+padding:"10px",
+borderRadius:"10px",
+border:"none"
+}}>
+使い放題
+</button>
+
 </div>
 
+</div>
 )}
 
-
-{/* INPUT */}
-
-<div style={{
-display:"flex",
-padding:"10px",
-background:"#fff"
-}}>
-
+<div style={{display:"flex",padding:"10px",background:"#fff"}}>
 <input
 value={input}
 onChange={e=>setInput(e.target.value)}
@@ -409,11 +537,7 @@ border:"1px solid #ccc"
 <button onClick={send} style={{marginLeft:"10px"}}>
 送信
 </button>
-
 </div>
-
-
-{/* GIFT */}
 
 <div style={{
 display:"flex",
@@ -422,12 +546,10 @@ padding:"10px",
 background:"#fff",
 borderTop:"1px solid #eee"
 }}>
-
 <button onClick={()=>gift(100)}>🌸100</button>
 <button onClick={()=>gift(500)}>🎁500</button>
 <button onClick={()=>gift(1000)}>💎1000</button>
 <button onClick={vip}>⭐VIP</button>
-
 </div>
 
 <MenuModal open={menuOpen} onClose={()=>setMenuOpen(false)} />
@@ -435,5 +557,4 @@ borderTop:"1px solid #eee"
 </div>
 
 );
-
 }

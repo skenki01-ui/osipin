@@ -2,7 +2,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 function getDefaultUser() {
   return {
-    points: 120,
+    point: 120,
     pins: [], // [{ characterId, type, expireAt }]
     characterTurns: {}, // { rei: 3, teo: 1 }
     cards: {}, // 後で使う
@@ -70,7 +70,7 @@ export function buyOnePin(characterId) {
   let user = getUserData();
   user = cleanupExpiredPins(user);
 
-  if (user.points < 30) {
+  if (user.point < 30) {
     return { ok: false, message: "ポイント不足です" };
   }
 
@@ -78,7 +78,7 @@ export function buyOnePin(characterId) {
     return { ok: false, message: "ピンは最大3つまでです" };
   }
 
-  user.points -= 30;
+  user.point -= 30;
 
   user.pins.push({
     characterId,
@@ -97,7 +97,7 @@ export function buyThreePins(characterIds) {
   let user = getUserData();
   user = cleanupExpiredPins(user);
 
-  if (user.points < 80) {
+  if (user.point < 80) {
     return { ok: false, message: "ポイント不足です" };
   }
 
@@ -109,7 +109,7 @@ export function buyThreePins(characterIds) {
     return { ok: false, message: "ピンは最大3つまでです" };
   }
 
-  user.points -= 80;
+  user.point -= 80;
 
   characterIds.forEach((characterId) => {
     user.pins.push({
@@ -130,7 +130,7 @@ export function buyOneDay(characterId) {
   let user = getUserData();
   user = cleanupExpiredPins(user);
 
-  if (user.points < 120) {
+  if (user.point < 120) {
     return { ok: false, message: "ポイント不足です" };
   }
 
@@ -138,7 +138,7 @@ export function buyOneDay(characterId) {
     return { ok: false, message: "ピンは最大3つまでです" };
   }
 
-  user.points -= 120;
+  user.point -= 120;
 
   user.pins.push({
     characterId,
@@ -194,11 +194,11 @@ export function addOneTurn(characterId) {
   let user = getUserData();
   user = cleanupExpiredPins(user);
 
-  if (user.points < 5) {
+  if (user.point < 5) {
     return { ok: false, message: "ポイント不足です" };
   }
 
-  user.points -= 5;
+  user.point -= 5;
   user.characterTurns[characterId] = (user.characterTurns[characterId] || 0) + 1;
 
   saveUserData(user);
