@@ -1,152 +1,111 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
 
 export default function Register(){
 
-const [name,setName] = useState("");
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const start = async () => {
+  return(
 
-if(!name.trim()){
-alert("ニックネーム入れて");
-return;
-}
+    <div style={{
+      width:"375px",
+      margin:"0 auto",
+      minHeight:"100vh",
+      display:"flex",
+      flexDirection:"column",
+      justifyContent:"center",
+      alignItems:"center",
+      background:"#ffeaf4",
+      padding:"20px",
+      boxSizing:"border-box"
+    }}>
 
-const userId = crypto.randomUUID();
+      <div style={{marginBottom:"20px",fontSize:"18px",fontWeight:"bold"}}>
+        押しピン
+      </div>
 
-// ブラウザ保存
-localStorage.setItem("name",name);
-localStorage.setItem("user_id",userId);
+      <input
+        placeholder="なんて呼ばれたい？"
+        style={{
+          width:"100%",
+          padding:"12px",
+          borderRadius:"10px",
+          border:"1px solid #ccc",
+          marginBottom:"10px"
+        }}
+        onChange={(e)=>{
+          localStorage.setItem("name",e.target.value);
+        }}
+      />
 
-// usersテーブルに保存（なければ作る）
-await supabase
-.from("users")
-.upsert({
-id: userId,
-nickname: name,
-points: 100
-});
+      <button
+        onClick={()=>navigate("/home")}
+        style={{
+          width:"100%",
+          padding:"12px",
+          borderRadius:"10px",
+          border:"none",
+          background:"#ff4d4f",
+          color:"#fff",
+          marginBottom:"20px"
+        }}
+      >
+        はじめる
+      </button>
 
-navigate("/home");
+      {/* ⭐PWA説明 */}
+      <div style={{
+        fontSize:"11px",
+        textAlign:"center",
+        marginBottom:"10px"
+      }}>
+        📱 ホーム画面に追加するとアプリのように使えます
+      </div>
 
-};
+      {/* ⭐法律リンク（4つに修正） */}
+      <div style={{
+        fontSize:"11px",
+        textAlign:"center",
+        lineHeight:"1.6"
+      }}>
 
-return(
+        <span
+          onClick={()=>navigate("/terms")}
+          style={{textDecoration:"underline",cursor:"pointer"}}
+        >
+          利用規約
+        </span>
 
-<div style={{
-height:"100vh",
-display:"flex",
-justifyContent:"center",
-alignItems:"center",
-background:"#ffeaf4"
-}}>
+        {" / "}
 
-<div style={{textAlign:"center",width:"260px"}}>
+        <span
+          onClick={()=>navigate("/privacy")}
+          style={{textDecoration:"underline",cursor:"pointer"}}
+        >
+          プライバシー
+        </span>
 
-<h1>OSHIPIN</h1>
+        {" / "}
 
-<p style={{marginBottom:"20px"}}>
-推しとチャットができるコミュニケーションアプリ
-</p>
+        <span
+          onClick={()=>navigate("/tokushoho")}
+          style={{textDecoration:"underline",cursor:"pointer"}}
+        >
+          特商法
+        </span>
 
-<input
-placeholder="ニックネーム"
-value={name}
-onChange={(e)=>setName(e.target.value)}
-style={{
-padding:"10px",
-borderRadius:"10px",
-border:"1px solid #ccc",
-width:"100%"
-}}
-/>
+        {" / "}
 
-<br/>
+        <span
+          onClick={()=>navigate("/contact")}
+          style={{textDecoration:"underline",cursor:"pointer"}}
+        >
+          お問い合わせ
+        </span>
 
-<button
-type="button"
-onClick={start}
-style={{
-marginTop:"20px",
-padding:"10px",
-width:"100%",
-background:"#ff4fa3",
-border:"none",
-color:"#fff",
-borderRadius:"10px",
-cursor:"pointer"
-}}
->
-はじめる
-</button>
+      </div>
 
-{/* ⭐PWA */}
-<div style={{
-fontSize:"11px",
-marginTop:"15px",
-opacity:0.7
-}}>
-📱 ホーム画面に追加するとアプリのように使えます
-</div>
+    </div>
 
-{/* ⭐規約 */}
-<div style={{
-fontSize:"11px",
-marginTop:"8px",
-lineHeight:"1.6"
-}}>
-
-<span
-onClick={()=>navigate("/terms")}
-style={{textDecoration:"underline",cursor:"pointer"}}
->
-利用規約
-</span>
-
-{" / "}
-
-<span
-onClick={()=>navigate("/privacy")}
-style={{textDecoration:"underline",cursor:"pointer"}}
->
-プライバシー
-</span>
-
-{" / "}
-
-<span
-onClick={()=>navigate("/tokushoho")}
-style={{textDecoration:"underline",cursor:"pointer"}}
->
-特商法
-</span>
-
-{" / "}
-
-<span
-onClick={()=>navigate("/contact")}
-style={{textDecoration:"underline",cursor:"pointer"}}
->
-お問い合わせ
-</span>
-
-</div>
-
-{/* ⭐ここ追加（審査で一番大事） */}
-<div style={{
-fontSize:"10px",
-marginTop:"10px",
-opacity:0.7
-}}>
-「はじめる」を押すことで、利用規約およびプライバシーポリシーに同意したものとみなされます。
-</div>
-
-</div>
-
-</div>
-
-);
-
+  );
 }

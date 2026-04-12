@@ -20,7 +20,7 @@ let current = parseInt(localStorage.getItem("pinStock") || "0");
 current += count;
 localStorage.setItem("pinStock",current);
 setStock(current);
-navigate("/home");
+navigate("/pin");
 }
 
 /* おすすめ並び */
