@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM from "react-dom/client";  // ⭐これ追加
 import App from "./App";
 import "./style.css";
 
