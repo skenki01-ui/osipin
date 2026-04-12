@@ -34,14 +34,13 @@ setPoints(data.points || 0);
 
 // =====================
 // 購入（仮：テスト）
-/* 👉 本番はPay.jpに差し替え */
 // =====================
 async function buy(p){
 
 const ok = window.confirm(`${p}ポイント購入しますか？`);
 if(!ok) return;
 
-/* ⭐ここだけ修正 */
+/* ⭐最新ポイント取得 */
 const { data } = await supabase
 .from("users")
 .select("points")
@@ -98,12 +97,17 @@ fontWeight:"bold"
 </div>
 
 
-{/* 説明 */}
+{/* ⭐説明（審査用に強化） */}
 <div style={{
 fontSize:"13px",
-marginBottom:"20px"
+marginBottom:"20px",
+lineHeight:"1.6"
 }}>
-1p = 10円
+・1ポイント = 10円<br/>
+・チャットの送信に使用されます<br/>
+・1ターン = 5ポイント<br/>
+・購入したポイントはすぐに反映されます<br/>
+・月額プラン（使い放題）は現在準備中です
 </div>
 
 
@@ -114,22 +118,18 @@ flexDirection:"column",
 gap:"10px"
 }}>
 
-{/* 100円 */}
 <button onClick={()=>buy(10)} style={btnStyle}>
 100円 → 10p
 </button>
 
-{/* 300円 */}
 <button onClick={()=>buy(30)} style={btnStyle}>
 300円 → 30p
 </button>
 
-{/* 500円 */}
 <button onClick={()=>buy(50)} style={btnStyle}>
 500円 → 50p
 </button>
 
-{/* ⭐おすすめ */}
 <button onClick={()=>buy(100)} style={{
 ...btnStyle,
 background:"#ff4d4f",
@@ -138,15 +138,39 @@ color:"#fff"
 🔥1000円 → 100p（おすすめ）
 </button>
 
-{/* 3000円 */}
 <button onClick={()=>buy(300)} style={btnStyle}>
 3000円 → 300p
 </button>
 
-{/* 10000円 */}
 <button onClick={()=>buy(1000)} style={btnStyle}>
 10000円 → 1000p
 </button>
+
+</div>
+
+
+{/* ⭐規約導線 */}
+<div style={{
+marginTop:"30px",
+fontSize:"11px",
+textAlign:"center"
+}}>
+
+<span
+onClick={()=>navigate("/terms")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+利用規約
+</span>
+
+{" / "}
+
+<span
+onClick={()=>navigate("/tokushoho")}
+style={{textDecoration:"underline",cursor:"pointer"}}
+>
+特商法
+</span>
 
 </div>
 

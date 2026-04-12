@@ -18,6 +18,13 @@ export default async function handler(req, res){
 
     const { token, amount, userId } = req.body;
 
+    // ⭐金額チェック（改ざん防止）
+    const validAmounts = [100,300,500,1000,3000,10000];
+
+    if(!validAmounts.includes(amount)){
+      return res.status(400).json({ success:false, error:"invalid amount" });
+    }
+
     // ⭐決済
     await payjp.charges.create({
       amount: amount,
@@ -25,25 +32,23 @@ export default async function handler(req, res){
       currency: "jpy"
     });
 
-    // ⭐ユーザー取得（ここ修正）
+    // ⭐ユーザー取得
     const { data } = await supabase
       .from("users")
-      .select("point")
+      .select("points")
       .eq("id", userId)
-      .maybeSingle(); // ←これが重要
+      .maybeSingle();
 
-    const currentPoint = data?.point || 0;
+    const currentPoints = data?.points || 0;
 
-    const addPoint = Math.floor(amount / 10);
-    const newPoint = currentPoint + addPoint;
+    const addPoints = Math.floor(amount / 10);
+    const newPoints = currentPoints + addPoints;
 
-    // ⭐更新
+    // ⭐更新（updateに変更）
     await supabase
       .from("users")
-      .upsert({
-        id: userId,
-        point: newPoint
-      });
+      .update({ points: newPoints })
+      .eq("id", userId);
 
     return res.status(200).json({ success:true });
 

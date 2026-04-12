@@ -134,6 +134,15 @@ style={{textDecoration:"underline",cursor:"pointer"}}
 
 </div>
 
+{/* ⭐ここ追加（審査で一番大事） */}
+<div style={{
+fontSize:"10px",
+marginTop:"10px",
+opacity:0.7
+}}>
+「はじめる」を押すことで、利用規約およびプライバシーポリシーに同意したものとみなされます。
+</div>
+
 </div>
 
 </div>

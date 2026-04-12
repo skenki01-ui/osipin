@@ -53,7 +53,7 @@ export default function MenuModal({ open, onClose }) {
 
         {/* サブスク */}
         <button
-          onClick={()=>alert("サブスクは次で実装")}
+          onClick={()=>alert("月額で会話が無制限になるプランです（審査後開始）")}
           style={{
             padding:"12px",
             borderRadius:"10px",
@@ -67,7 +67,7 @@ export default function MenuModal({ open, onClose }) {
 
         {/* VIP */}
         <button
-          onClick={()=>alert("特別なメッセージを送れます")}
+          onClick={()=>alert("特別なメッセージを送れる機能です（審査後開始）")}
           style={{
             padding:"12px",
             borderRadius:"10px",
@@ -121,6 +121,39 @@ export default function MenuModal({ open, onClose }) {
           }}
         >
           📱 ホーム画面に追加
+        </button>
+
+        {/* ⭐法律 */}
+        <button
+          onClick={()=>{
+            navigate("/terms");
+            onClose();
+          }}
+          style={{
+            padding:"10px",
+            borderRadius:"10px",
+            border:"1px solid #ccc",
+            background:"#fff",
+            fontSize:"12px"
+          }}
+        >
+          利用規約
+        </button>
+
+        <button
+          onClick={()=>{
+            navigate("/tokushoho");
+            onClose();
+          }}
+          style={{
+            padding:"10px",
+            borderRadius:"10px",
+            border:"1px solid #ccc",
+            background:"#fff",
+            fontSize:"12px"
+          }}
+        >
+          特商法
         </button>
 
         <button
