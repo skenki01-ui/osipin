@@ -1,5 +1,3 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import characters from "../data/characters";
@@ -33,7 +31,6 @@ setPins(JSON.parse(localStorage.getItem("pins") || "{}"));
 setTurns(JSON.parse(localStorage.getItem("turns") || "{}"));
 }
 
-
 /* ⭐ここだけ修正（406対策） */
 async function loadPoints(){
 
@@ -62,7 +59,6 @@ return;
 
 setPoints(data.points || 0);
 }
-
 
 function addPin(id,e){
 
@@ -93,7 +89,6 @@ setTurns(newTurns);
 localStorage.setItem("pinStock",stock - 1);
 }
 
-
 function getDisplay(id){
 
 const p = pins[id];
@@ -119,7 +114,6 @@ return `残${total}｜${m}m`;
 }
 }
 
-
 function isActivePin(id){
 
 const p = pins[id];
@@ -131,11 +125,9 @@ if(!p.started) return true;
 return p.expire > Date.now();
 }
 
-
 const filtered = characters.filter(c =>
 c.name.includes(search)
 );
-
 
 return(
 
@@ -148,7 +140,6 @@ padding:"10px",
 boxSizing:"border-box"
 }}>
 
-{/* ⭐サービス説明（審査用） */}
 <div style={{
 fontSize:"12px",
 marginBottom:"10px",
@@ -177,48 +168,20 @@ gap:"8px",
 marginBottom:"10px"
 }}>
 
-<button
-onClick={()=>navigate("/pin")}
-style={{
-flex:1,
-padding:"8px",
-borderRadius:"10px",
-border:"1px solid #ccc",
-background:"#fff"
-}}
->
+<button onClick={()=>navigate("/pin")} style={{flex:1,padding:"8px",borderRadius:"10px",border:"1px solid #ccc",background:"#fff"}}>
 📌ピン購入
 </button>
 
-<button
-onClick={()=>navigate("/rank")}
-style={{
-flex:1,
-padding:"8px",
-borderRadius:"10px",
-border:"1px solid #ccc",
-background:"#fff"
-}}
->
+<button onClick={()=>navigate("/rank")} style={{flex:1,padding:"8px",borderRadius:"10px",border:"1px solid #ccc",background:"#fff"}}>
 ⭐ランキング
 </button>
 
-<button
-onClick={()=>navigate("/cards")}
-style={{
-flex:1,
-padding:"8px",
-borderRadius:"10px",
-border:"1px solid #ccc",
-background:"#fff"
-}}
->
+<button onClick={()=>navigate("/cards")} style={{flex:1,padding:"8px",borderRadius:"10px",border:"1px solid #ccc",background:"#fff"}}>
 🧾カード
 </button>
 
 </div>
 
-{/* ⭐料金表示（超重要） */}
 <div style={{
 fontSize:"12px",
 marginBottom:"10px",
@@ -232,10 +195,7 @@ borderRadius:"8px"
 ・月額プランあり（1200円 / 1900円）
 </div>
 
-<div style={{
-marginBottom:"10px",
-fontSize:"14px"
-}}>
+<div style={{marginBottom:"10px",fontSize:"14px"}}>
 所持ポイント：{points}p
 </div>
 
@@ -259,8 +219,7 @@ const active = isActivePin(c.id);
 
 return(
 
-<div
-key={c.id}
+<div key={c.id}
 onClick={()=>navigate(`/chat/${c.id}`)}
 style={{
 display:"flex",
@@ -270,11 +229,9 @@ padding:"10px",
 borderRadius:"10px",
 marginBottom:"8px",
 cursor:"pointer"
-}}
->
+}}>
 
-<div
-onClick={(e)=>addPin(c.id,e)}
+<div onClick={(e)=>addPin(c.id,e)}
 style={{
 marginRight:"8px",
 minWidth:"20px",
@@ -284,21 +241,18 @@ justifyContent:"center",
 fontSize:"16px",
 filter: active ? "none" : "grayscale(1)",
 opacity: active ? 1 : 0.35
-}}
->
+}}>
 📌
 </div>
 
-<img
-src={c.img}
+<img src={c.img}
 style={{
 width:"32px",
 height:"32px",
 borderRadius:"8px",
 marginRight:"8px",
 flexShrink:0
-}}
-/>
+}}/>
 
 <div style={{
 flex:1,
@@ -309,11 +263,7 @@ whiteSpace:"nowrap",
 minWidth:0
 }}>
 
-<span style={{
-fontWeight:"bold",
-marginRight:"6px",
-flexShrink:0
-}}>
+<span style={{fontWeight:"bold",marginRight:"6px",flexShrink:0}}>
 {c.name}
 </span>
 
@@ -343,7 +293,6 @@ flexShrink:0
 
 })}
 
-{/* ⭐フッターリンク（審査で超重要） */}
 <div style={{
 fontSize:"11px",
 marginTop:"20px",
@@ -351,27 +300,13 @@ textAlign:"center",
 lineHeight:"1.6"
 }}>
 
-<span onClick={()=>navigate("/terms")} style={{textDecoration:"underline",cursor:"pointer"}}>
-利用規約
-</span>
-
+<span onClick={()=>navigate("/terms")} style={{textDecoration:"underline",cursor:"pointer"}}>利用規約</span>
 {" / "}
-
-<span onClick={()=>navigate("/privacy")} style={{textDecoration:"underline",cursor:"pointer"}}>
-プライバシー
-</span>
-
+<span onClick={()=>navigate("/privacy")} style={{textDecoration:"underline",cursor:"pointer"}}>プライバシー</span>
 {" / "}
-
-<span onClick={()=>navigate("/tokushoho")} style={{textDecoration:"underline",cursor:"pointer"}}>
-特商法
-</span>
-
+<span onClick={()=>navigate("/tokushoho")} style={{textDecoration:"underline",cursor:"pointer"}}>特商法</span>
 {" / "}
-
-<span onClick={()=>navigate("/contact")} style={{textDecoration:"underline",cursor:"pointer"}}>
-お問い合わせ
-</span>
+<span onClick={()=>navigate("/contact")} style={{textDecoration:"underline",cursor:"pointer"}}>お問い合わせ</span>
 
 </div>
 
