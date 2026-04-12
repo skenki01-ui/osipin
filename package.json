@@ -10,28 +10,11 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
-    "body-parser": "^2.2.2",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "payjp": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "vite": "^5.0.0"
-  },
-  "description": "",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/skenki01-ui/fanchat.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/skenki01-ui/fanchat/issues"
-  },
-  "homepage": "https://github.com/skenki01-ui/fanchat#readme"
+  }
 }
