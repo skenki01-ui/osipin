@@ -4,177 +4,165 @@ import characters from "../data/characters";
 import MenuModal from "../components/MenuModal";
 import { supabase } from "../lib/supabase";
 
-export default function Home() {
+export default function Home(){
 
-  // ⭐ ID固定
-  let userId = localStorage.getItem("user_id");
-  if (!userId) {
-    userId = crypto.randomUUID();
-    localStorage.setItem("user_id", userId);
-  }
+let userId = localStorage.getItem("user_id");
+if(!userId){
+userId = crypto.randomUUID();
+localStorage.setItem("user_id", userId);
+}
 
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [points, setPoints] = useState(0);
-  const [search, setSearch] = useState("");
-  const [pins, setPins] = useState({});
-  const [turns, setTurns] = useState({});
+const navigate = useNavigate();
+const [menuOpen,setMenuOpen] = useState(false);
+const [points,setPoints] = useState(0);
+const [search,setSearch] = useState("");
 
-  useEffect(() => {
-    loadPoints();
-    loadLocal();
-  }, []);
+const [pins,setPins] = useState({});
+const [turns,setTurns] = useState({});
 
-  function loadLocal() {
-    setPins(JSON.parse(localStorage.getItem("pins") || "{}"));
-    setTurns(JSON.parse(localStorage.getItem("turns") || "{}"));
-  }
+useEffect(()=>{
+loadPoints();
+loadLocal();
+},[]);
 
-  // ⭐ Supabase（406対策済）
-  async function loadPoints() {
-    if (!userId) return;
+function loadLocal(){
+setPins(JSON.parse(localStorage.getItem("pins") || "{}"));
+setTurns(JSON.parse(localStorage.getItem("turns") || "{}"));
+}
 
-    let { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .maybeSingle(); // ←ここ重要（406防止）
+async function loadPoints(){
 
-    if (error || !data) {
-      const { data: newUser } = await supabase
-        .from("users")
-        .insert({
-          id: userId,
-          points: 0,
-        })
-        .select()
-        .single();
+if(!userId) return;
 
-      setPoints(newUser?.points || 0);
-      return;
-    }
+let { data, error } = await supabase
+.from("users")
+.select("*")
+.eq("id",userId)
+.single();
 
-    setPoints(data.points || 0);
-  }
+if(error){
 
-  function addPin(id, e) {
-    e.stopPropagation();
+const { data: newUser } = await supabase
+.from("users")
+.insert({
+id: userId,
+points: 0
+})
+.select()
+.single();
 
-    let stock = parseInt(localStorage.getItem("pinStock") || "0");
+setPoints(newUser.points);
+return;
+}
 
-    if (stock <= 0) {
-      navigate("/pin");
-      return;
-    }
+setPoints(data.points || 0);
+}
 
-    const newPins = { ...pins };
-    newPins[id] = { expire: null, started: false };
+function addPin(id,e){
 
-    localStorage.setItem("pins", JSON.stringify(newPins));
-    setPins(newPins);
+e.stopPropagation();
 
-    const newTurns = { ...turns };
-    newTurns[id] = {
-      pin: 3,
-      carry: newTurns[id]?.carry || 0,
-    };
+let stock = parseInt(localStorage.getItem("pinStock") || "0");
 
-    localStorage.setItem("turns", JSON.stringify(newTurns));
-    setTurns(newTurns);
+if(stock <= 0){
+navigate("/pin");
+return;
+}
 
-    localStorage.setItem("pinStock", stock - 1);
-  }
+const newPins = {...pins};
+newPins[id] = {expire:null,started:false};
 
-  function getDisplay(id) {
-    const p = pins[id];
-    const t = turns[id];
+localStorage.setItem("pins",JSON.stringify(newPins));
+setPins(newPins);
 
-    if (!p) return "ピンが必要";
+const newTurns = {...turns};
+newTurns[id] = {
+pin:3,
+carry:(newTurns[id]?.carry || 0)
+};
 
-    const total = (t?.pin || 0) + (t?.carry || 0);
+localStorage.setItem("turns",JSON.stringify(newTurns));
+setTurns(newTurns);
 
-    if (!p.started) return `残${total}`;
+localStorage.setItem("pinStock",stock - 1);
+}
 
-    const diff = p.expire - Date.now();
+function getDisplay(id){
 
-    if (diff <= 0) return "ピンが必要";
+const p = pins[id];
+const t = turns[id];
 
-    const h = Math.floor(diff / 1000 / 60 / 60);
-    const m = Math.floor((diff / 1000 / 60) % 60);
+if(!p) return "ピンが必要";
 
-    return h > 0 ? `残${total}｜${h}h${m}m` : `残${total}｜${m}m`;
-  }
+const total = (t?.pin || 0) + (t?.carry || 0);
 
-  function isActivePin(id) {
-    const p = pins[id];
-    if (!p) return false;
-    if (!p.started) return true;
-    return p.expire > Date.now();
-  }
+if(!p.started) return `残${total}`;
 
-  const filtered = characters.filter((c) =>
-    c.name.includes(search)
-  );
+const diff = p.expire - Date.now();
 
-  return (
-    <div
-      style={{
-        width: "375px",
-        margin: "0 auto",
-        minHeight: "100vh",
-        background: "#ffeaf4",
-        padding: "10px",
-        boxSizing: "border-box",
-      }}
-    >
-      {/* 説明 */}
-      <div style={{ fontSize: "12px", marginBottom: "10px" }}>
-        AIキャラクターとチャットができるサービスです。
-      </div>
+if(diff <= 0) return "ピンが必要";
 
-      {/* ヘッダー */}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div onClick={() => navigate(-1)}>◀︎</div>
-        <div>HOME</div>
-        <div onClick={() => setMenuOpen(true)}>☰</div>
-      </div>
+const h = Math.floor(diff / 1000 / 60 / 60);
+const m = Math.floor((diff / 1000 / 60) % 60);
 
-      {/* ボタン */}
-      <div style={{ display: "flex", gap: "8px", margin: "10px 0" }}>
-        <button onClick={() => navigate("/pin")}>📌ピン</button>
-        <button onClick={() => navigate("/rank")}>⭐ランキング</button>
-        <button onClick={() => navigate("/cards")}>🧾カード</button>
-      </div>
+if(h > 0){
+return `残${total}｜${h}h${m}m`;
+}else{
+return `残${total}｜${m}m`;
+}
+}
 
-      {/* ポイント */}
-      <div>所持ポイント：{points}p</div>
+function isActivePin(id){
 
-      {/* 検索 */}
-      <input
-        placeholder="検索"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+const p = pins[id];
 
-      {/* キャラ一覧 */}
-      {filtered.map((c) => {
-        const active = isActivePin(c.id);
+if(!p) return false;
 
-        return (
-          <div
-            key={c.id}
-            onClick={() => navigate(`/chat/${c.id}`)}
-            style={{ display: "flex", margin: "10px 0", cursor: "pointer" }}
-          >
-            <div onClick={(e) => addPin(c.id, e)}>📌</div>
-            <img src={c.img} width={32} />
-            <div>{c.name}</div>
-            <div>{getDisplay(c.id)}</div>
-          </div>
-        );
-      })}
+if(!p.started) return true;
 
-      <MenuModal open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </div>
-  );
+return p.expire > Date.now();
+}
+
+const filtered = characters.filter(c =>
+c.name.includes(search)
+);
+
+return(
+
+<div style={{
+width:"375px",
+margin:"0 auto",
+minHeight:"100vh",
+background:"#ffeaf4",
+padding:"10px",
+boxSizing:"border-box"
+}}>
+
+<div style={{fontSize:"12px",marginBottom:"10px"}}>
+AIキャラクターとチャットができるサービスです。
+</div>
+
+<div style={{display:"flex",justifyContent:"space-between"}}>
+<div onClick={()=>navigate(-1)}>◀︎</div>
+<div>HOME</div>
+<div onClick={()=>setMenuOpen(true)}>☰</div>
+</div>
+
+<input
+placeholder="検索"
+value={search}
+onChange={(e)=>setSearch(e.target.value)}
+/>
+
+{filtered.map(c => (
+<div key={c.id} onClick={()=>navigate(`/chat/${c.id}`)}>
+{c.name}
+</div>
+))}
+
+<MenuModal open={menuOpen} onClose={()=>setMenuOpen(false)} />
+
+</div>
+
+);
 }
