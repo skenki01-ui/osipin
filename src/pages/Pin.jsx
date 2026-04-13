@@ -105,7 +105,6 @@ gap:"6px",
 marginBottom:"12px"
 }}>
 
-{/* 1ピン */}
 <div style={{
 display:"flex",
 justifyContent:"space-between",
@@ -117,22 +116,18 @@ borderRadius:"8px"
 <div style={{fontSize:"12px"}}>
 1ピン（3T｜24h）
 </div>
-<button
-onClick={()=>buy(1)}
-style={{
+<button onClick={()=>buy(1)} style={{
 background:"#ff4d4f",
 color:"#fff",
 padding:"6px 10px",
 borderRadius:"6px",
 border:"none",
 fontSize:"12px"
-}}
->
+}}>
 30p
 </button>
 </div>
 
-{/* 3ピン */}
 <div style={{
 display:"flex",
 justifyContent:"space-between",
@@ -144,24 +139,20 @@ borderRadius:"8px"
 <div style={{fontSize:"12px"}}>
 3ピン（お得）
 </div>
-<button
-onClick={()=>buy(3)}
-style={{
+<button onClick={()=>buy(3)} style={{
 background:"#ff4d4f",
 color:"#fff",
 padding:"6px 10px",
 borderRadius:"6px",
 border:"none",
 fontSize:"12px"
-}}
->
+}}>
 80p
 </button>
 </div>
 
 </div>
 
-{/* 検索 */}
 <input
 placeholder="検索"
 value={search}
@@ -175,17 +166,15 @@ marginBottom:"6px"
 }}
 />
 
-{/* 表題 */}
 <div style={{fontWeight:"bold",marginBottom:"8px"}}>
 メンバー紹介
 </div>
 
-{/* メンバー */}
 {displayed.map(c => (
 
 <div
 key={c.id}
-onClick={()=>navigate(`/chat/${c.id}`)}  /* ⭐追加 */
+onClick={()=>navigate(`/chat/${c.id}`)}
 style={{
 display:"flex",
 alignItems:"center",
@@ -193,13 +182,11 @@ background:"#fff",
 padding:"8px",
 borderRadius:"8px",
 marginBottom:"6px",
-cursor:"pointer"  /* ⭐追加 */
+cursor:"pointer"
 }}
 >
 
-<img
-src={c.img}
-style={{
+<img src={c.img} style={{
 width:"28px",
 height:"28px",
 borderRadius:"6px",
