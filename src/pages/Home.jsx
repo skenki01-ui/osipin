@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import characters from "../data/characters";
 import MenuModal from "../components/MenuModal";
@@ -142,23 +142,58 @@ boxSizing:"border-box"
 AIキャラクターとチャットができるサービスです。
 </div>
 
-<div style={{display:"flex",justifyContent:"space-between"}}>
-<div onClick={()=>navigate(-1)}>◀︎</div>
-<div>HOME</div>
-<div onClick={()=>setMenuOpen(true)}>☰</div>
+<div style={{
+display:"flex",
+justifyContent:"space-between",
+marginBottom:"10px"
+}}>
+<div onClick={()=>navigate(-1)} style={{cursor:"pointer"}}>◀︎</div>
+<div style={{fontWeight:"bold"}}>HOME</div>
+<div onClick={()=>setMenuOpen(true)} style={{cursor:"pointer"}}>☰</div>
 </div>
 
 <input
 placeholder="検索"
 value={search}
 onChange={(e)=>setSearch(e.target.value)}
+style={{
+width:"100%",
+padding:"10px",
+borderRadius:"10px",
+border:"1px solid #ccc",
+marginBottom:"10px"
+}}
 />
 
-{filtered.map(c => (
-<div key={c.id} onClick={()=>navigate(`/chat/${c.id}`)}>
-{c.name}
+{filtered.map(c => {
+
+const active = isActivePin(c.id);
+
+return(
+<div key={c.id}
+onClick={()=>navigate(`/chat/${c.id}`)}
+style={{
+display:"flex",
+justifyContent:"space-between",
+padding:"10px",
+background:"#fff",
+borderRadius:"10px",
+marginBottom:"6px",
+cursor:"pointer",
+opacity: active ? 1 : 0.6
+}}
+>
+
+<div>{c.name}</div>
+
+<div style={{fontSize:"12px"}}>
+{getDisplay(c.id)}
 </div>
-))}
+
+</div>
+);
+
+})}
 
 <MenuModal open={menuOpen} onClose={()=>setMenuOpen(false)} />
 
