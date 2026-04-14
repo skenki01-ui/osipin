@@ -1,72 +1,53 @@
 import React from "react";
 import Payjp from "@payjp/payjs";
 
-export default function PayButton() {
-  const publicKey = import.meta.env.VITE_PAYJP_PUBLIC_KEY;
+export default function PayButton(){
 
-  async function handlePay() {
-    if (!publicKey) {
-      alert("PAY.JPの公開鍵が設定されていません");
-      return;
-    }
+const payjp = Payjp(import.meta.env.VITE_PAYJP_PUBLIC_KEY);
 
-    const payjp = Payjp(publicKey);
+async function handlePay(){
 
-    const mountTarget = document.getElementById("card-element");
-    if (!mountTarget) {
-      alert("カード入力欄が見つかりません");
-      return;
-    }
+const elements = payjp.elements();
+const card = elements.create("card");
 
-    mountTarget.innerHTML = "";
+card.mount("#card-element");
 
-    const elements = payjp.elements();
-    const card = elements.create("card");
+const { token, error } = await payjp.createToken(card);
 
-    card.mount("#card-element");
+if(error){
+alert(error.message);
+return;
+}
 
-    const { token, error } = await payjp.createToken(card);
+await fetch("/api/pay", {
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
+token: token.id,
+amount: 1000
+})
+});
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
+alert("決済完了");
+}
 
-    const res = await fetch("/api/pay", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        token: token.id,
-        amount: 1000
-      })
-    });
+return(
 
-    const data = await res.json();
+<div>
 
-    if (!res.ok || !data.success) {
-      alert(data.error || "決済に失敗しました");
-      return;
-    }
+<div id="card-element" style={{
+border:"1px solid #ccc",
+padding:"10px",
+marginBottom:"10px"
+}}></div>
 
-    alert("決済完了");
-  }
+<button onClick={handlePay}>
+支払う（1000円）
+</button>
 
-  return (
-    <div>
-      <div
-        id="card-element"
-        style={{
-          border: "1px solid #ccc",
-          padding: "10px",
-          marginBottom: "10px"
-        }}
-      ></div>
+</div>
 
-      <button onClick={handlePay}>
-        支払う（1000円）
-      </button>
-    </div>
-  );
+);
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -12,18 +12,16 @@ import Contact from "./pages/legal/Contact";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Register />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/pin" element={<Pin />} />
-        <Route path="/pay" element={<Pay />} />
+    <Routes>
+      <Route path="/" element={<Register />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/pin" element={<Pin />} />
+      <Route path="/pay" element={<Pay />} />
 
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/tokushoho" element={<Tokushoho />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-    </BrowserRouter>
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/tokushoho" element={<Tokushoho />} />
+      <Route path="/contact" element={<Contact />} />
+    </Routes>
   );
 }
