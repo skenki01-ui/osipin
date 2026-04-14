@@ -1,11 +1,9 @@
-import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Pin from "./pages/Pin";
 import Pay from "./pages/Pay";
-import Chat from "./pages/Chat";
 
 import Terms from "./pages/legal/Terms";
 import Privacy from "./pages/legal/Privacy";
@@ -20,7 +18,6 @@ export default function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/pin" element={<Pin />} />
         <Route path="/pay" element={<Pay />} />
-        <Route path="/chat/:id" element={<Chat />} />
 
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
