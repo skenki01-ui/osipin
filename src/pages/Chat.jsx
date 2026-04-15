@@ -19,7 +19,6 @@ export default function Chat() {
 
   const bottomRef = useRef(null);
 
-  // ID固定
   let userId = localStorage.getItem("user_id");
   if (!userId) {
     userId = crypto.randomUUID();
@@ -28,22 +27,18 @@ export default function Chat() {
 
   const userName = localStorage.getItem("name") || "ねえ";
 
-  // ⭐キャラガード
   if (!character) {
     return <div style={{ padding: 20 }}>読み込み中...</div>;
   }
 
   useEffect(() => {
-
     if (!character) return;
-
     loadMessages();
     loadPoints();
-
   }, [character]);
 
   // =====================
-  // ⭐ポイント（完全修正）
+  // ⭐完全修正（ここ）
   // =====================
   async function loadPoints() {
 
@@ -51,9 +46,8 @@ export default function Chat() {
       .from("users")
       .select("points")
       .eq("id", userId)
-      .single();
+      .maybeSingle(); // ⭐ここ重要
 
-    // ⭐ここが重要（null対策）
     if (!data) {
 
       const { data: newUser } = await supabase
@@ -63,7 +57,7 @@ export default function Chat() {
           points: 0
         })
         .select()
-        .single();
+        .maybeSingle(); // ⭐ここも
 
       setPoints(newUser?.points || 0);
       return;
@@ -81,9 +75,6 @@ export default function Chat() {
       .eq("id", userId);
   }
 
-  // =====================
-  // メッセージ
-  // =====================
   async function loadMessages() {
 
     if (!character) return;
@@ -105,16 +96,10 @@ export default function Chat() {
     }
   }
 
-  // =====================
-  // スクロール
-  // =====================
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // =====================
-  // 送信
-  // =====================
   async function send() {
 
     if (!input.trim()) return;
@@ -129,9 +114,7 @@ export default function Chat() {
       await updatePoints(points - 5);
 
     } else {
-
       setTurn(t => t - 1);
-
     }
 
     const currentInput = input;
@@ -162,9 +145,6 @@ export default function Chat() {
     }, 500);
   }
 
-  // =====================
-  // UI
-  // =====================
   return (
     <div style={{
       width: "375px",
@@ -175,7 +155,6 @@ export default function Chat() {
       background: "#eaf3ff"
     }}>
 
-      {/* ヘッダー */}
       <div style={{
         padding: "10px",
         display: "flex",
@@ -188,20 +167,16 @@ export default function Chat() {
         <div onClick={() => setMenuOpen(true)} style={{ cursor: "pointer" }}>≡</div>
       </div>
 
-      {/* チャット */}
       <div style={{
         flex: 1,
         overflowY: "auto",
         padding: "10px"
       }}>
         {messages.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              textAlign: m.role === "user" ? "right" : "left",
-              marginBottom: "10px"
-            }}
-          >
+          <div key={i} style={{
+            textAlign: m.role === "user" ? "right" : "left",
+            marginBottom: "10px"
+          }}>
             <span style={{
               background: m.role === "user" ? "#4da6ff" : "#fff",
               color: m.role === "user" ? "#fff" : "#000",
@@ -216,7 +191,6 @@ export default function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* 入力欄 */}
       <div style={{
         display: "flex",
         padding: "10px",

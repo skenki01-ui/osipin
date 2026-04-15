@@ -39,23 +39,24 @@ function loadLocal(){
   setPins(JSON.parse(localStorage.getItem("pins") || "{}"));
 }
 
+// ⭐完全修正済み
 async function loadPoints(){
 
-  let { data, error } = await supabase
+  let { data } = await supabase
   .from("users")
   .select("*")
   .eq("id",userId)
-  .single();
+  .maybeSingle();
 
-  if(error){
+  if(!data){
 
     const { data: newUser } = await supabase
     .from("users")
     .insert({ id: userId, points: 0 })
     .select()
-    .single();
+    .maybeSingle();
 
-    setPoints(newUser.points);
+    setPoints(newUser?.points || 0);
     return;
   }
 
@@ -75,13 +76,12 @@ function addPin(id,e){
     return;
   }
 
-  // すでにピン済みなら無視
   if(pins[id]) return;
 
   const newPins = {
     ...pins,
     [id]: {
-      time: Date.now() // ⭐順番管理
+      time: Date.now()
     }
   };
 
@@ -93,12 +93,11 @@ function addPin(id,e){
   setPinStock(newStock);
 }
 
-// 表示用
 function isActivePin(id){
   return !!pins[id];
 }
 
-// 並び替え（ピン順）
+// ピン順
 const filtered = characters
   .filter(c => c.name.includes(search))
   .sort((a,b)=>{
@@ -128,7 +127,7 @@ return(
   <div onClick={()=>setMenuOpen(true)}>☰</div>
 </div>
 
-{/* ボタン3つ */}
+{/* ボタン */}
 <div style={{
   display:"flex",
   gap:"8px",
@@ -149,7 +148,7 @@ return(
 
 </div>
 
-{/* ポイント＋ピン */}
+{/* ポイント */}
 <div style={{marginBottom:"10px"}}>
 所持ポイント：{points}p ｜ 📌{pinStock}
 </div>
@@ -162,7 +161,7 @@ return(
   style={input}
 />
 
-{/* キャラ一覧 */}
+{/* 一覧 */}
 {filtered.map(c=>{
 
 const active = isActivePin(c.id);
@@ -230,12 +229,4 @@ background:"#fff",
 padding:"10px",
 borderRadius:"10px",
 marginBottom:"8px",
-cursor:"pointer"
-};
-
-const img = {
-width:"32px",
-height:"32px",
-borderRadius:"8px",
-marginRight:"8px"
-};
+cursor:"pointer
