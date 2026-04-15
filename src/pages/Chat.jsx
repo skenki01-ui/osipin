@@ -9,7 +9,6 @@ export default function Chat() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // ⭐ 修正：toLowerCase削除
   const character = characters.find(c => c.id === id);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,32 +28,34 @@ export default function Chat() {
 
   const userName = localStorage.getItem("name") || "ねえ";
 
-  // ⭐ キャラ安全チェック
+  // ⭐キャラガード
   if (!character) {
-    return <div style={{ padding: 20 }}>キャラが見つかりません</div>;
+    return <div style={{ padding: 20 }}>読み込み中...</div>;
   }
 
   useEffect(() => {
 
-  if (!character) return; // ⭐これ追加
+    if (!character) return;
 
-  loadMessages();
-  loadPoints();
+    loadMessages();
+    loadPoints();
 
-}, [character]);
+  }, [character]);
 
   // =====================
-  // ポイント
+  // ⭐ポイント（完全修正）
   // =====================
   async function loadPoints() {
 
-    let { data, error } = await supabase
+    let { data } = await supabase
       .from("users")
       .select("points")
       .eq("id", userId)
       .single();
 
-    if (error) {
+    // ⭐ここが重要（null対策）
+    if (!data) {
+
       const { data: newUser } = await supabase
         .from("users")
         .insert({
@@ -64,13 +65,11 @@ export default function Chat() {
         .select()
         .single();
 
-      setPoints(newUser.points);
+      setPoints(newUser?.points || 0);
       return;
     }
 
-    if (data) {
-      setPoints(data.points);
-    }
+    setPoints(data.points || 0);
   }
 
   async function updatePoints(newPoints) {
@@ -86,6 +85,8 @@ export default function Chat() {
   // メッセージ
   // =====================
   async function loadMessages() {
+
+    if (!character) return;
 
     const { data } = await supabase
       .from("messages")
@@ -145,7 +146,6 @@ export default function Chat() {
       content: currentInput
     });
 
-    // AI返答（仮）
     setTimeout(async () => {
 
       const reply = `${userName}と話せて嬉しい`;
@@ -160,7 +160,6 @@ export default function Chat() {
       });
 
     }, 500);
-
   }
 
   // =====================
