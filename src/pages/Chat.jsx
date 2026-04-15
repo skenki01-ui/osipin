@@ -35,9 +35,13 @@ export default function Chat() {
   }
 
   useEffect(() => {
-    loadMessages();
-    loadPoints();
-  }, []);
+
+  if (!character) return; // ⭐これ追加
+
+  loadMessages();
+  loadPoints();
+
+}, [character]);
 
   // =====================
   // ポイント
