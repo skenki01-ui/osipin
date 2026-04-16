@@ -47,37 +47,47 @@ export default function Chat() {
   // =====================
   async function loadPoints() {
 
-    let { data } = await supabase
-      .from("users")
-      .select("points")
-      .eq("id", userId)
-      .maybeSingle(); // ⭐重要
+    try {
 
-    if (!data) {
-
-      const { data: newUser } = await supabase
+      let { data } = await supabase
         .from("users")
-        .insert({
-          id: userId,
-          points: 0
-        })
-        .select()
-        .maybeSingle(); // ⭐重要
+        .select("*")
+        .eq("id", userId);
 
-      setPoints(newUser?.points || 0);
-      return;
+      // データ無いなら作る
+      if (!data || data.length === 0) {
+
+        await supabase
+          .from("users")
+          .insert({
+            id: userId,
+            points: 0
+          });
+
+        setPoints(0);
+        return;
+      }
+
+      setPoints(data[0].points || 0);
+
+    } catch (e) {
+      console.log("points error:", e);
+      setPoints(0);
     }
-
-    setPoints(data.points || 0);
   }
 
   async function updatePoints(newPoints) {
+
     setPoints(newPoints);
 
-    await supabase
-      .from("users")
-      .update({ points: newPoints })
-      .eq("id", userId);
+    try {
+      await supabase
+        .from("users")
+        .update({ points: newPoints })
+        .eq("id", userId);
+    } catch (e) {
+      console.log("update error:", e);
+    }
   }
 
   // =====================
@@ -85,25 +95,27 @@ export default function Chat() {
   // =====================
   async function loadMessages() {
 
-    const { data, error } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("character_id", character.id)
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true });
+    try {
 
-    if (error) {
-      console.log("messages error:", error);
-      return;
-    }
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("character_id", character.id)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true });
 
-    if (data) {
-      const formatted = data.map(m => ({
-        role: m.role === "user" ? "user" : "ai",
-        text: m.content
-      }));
+      if (data) {
 
-      setMessages(formatted);
+        const formatted = data.map(m => ({
+          role: m.role === "user" ? "user" : "ai",
+          text: m.content
+        }));
+
+        setMessages(formatted);
+      }
+
+    } catch (e) {
+      console.log("messages error:", e);
     }
   }
 
@@ -139,26 +151,34 @@ export default function Chat() {
     setMessages(prev => [...prev, { role: "user", text: currentInput }]);
     setInput("");
 
-    await supabase.from("messages").insert({
-      user_id: userId,
-      character_id: character.id,
-      role: "user",
-      content: currentInput
-    });
+    try {
+      await supabase.from("messages").insert({
+        user_id: userId,
+        character_id: character.id,
+        role: "user",
+        content: currentInput
+      });
+    } catch (e) {
+      console.log("insert user msg error:", e);
+    }
 
-    // AI返答
+    // AI返答（仮）
     setTimeout(async () => {
 
       const reply = `${userName}と話せて嬉しい`;
 
       setMessages(prev => [...prev, { role: "ai", text: reply }]);
 
-      await supabase.from("messages").insert({
-        user_id: userId,
-        character_id: character.id,
-        role: "ai",
-        content: reply
-      });
+      try {
+        await supabase.from("messages").insert({
+          user_id: userId,
+          character_id: character.id,
+          role: "ai",
+          content: reply
+        });
+      } catch (e) {
+        console.log("insert ai msg error:", e);
+      }
 
     }, 500);
   }
@@ -189,7 +209,7 @@ export default function Chat() {
         <div onClick={() => setMenuOpen(true)} style={{ cursor: "pointer" }}>≡</div>
       </div>
 
-      {/* ターン & ポイント */}
+      {/* ターン＆ポイント */}
       <div style={{
         padding: "5px 10px",
         fontSize: "12px"
@@ -225,7 +245,7 @@ export default function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* 入力欄 */}
+      {/* 入力 */}
       <div style={{
         display: "flex",
         padding: "10px",
