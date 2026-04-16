@@ -26,6 +26,7 @@ useEffect(()=>{
   loadLocal();
 
   let stock = localStorage.getItem("pinStock");
+
   if(!stock){
     localStorage.setItem("pinStock","3");
     setPinStock(3);
@@ -35,18 +36,23 @@ useEffect(()=>{
 
 },[]);
 
+// =====================
+// ローカル
+// =====================
 function loadLocal(){
   setPins(JSON.parse(localStorage.getItem("pins") || "{}"));
 }
 
-// ⭐完全修正済み
+// =====================
+// ⭐ポイント（406完全対策）
+// =====================
 async function loadPoints(){
 
   let { data } = await supabase
   .from("users")
   .select("*")
   .eq("id",userId)
-  .maybeSingle();
+  .maybeSingle(); // ⭐重要
 
   if(!data){
 
@@ -54,7 +60,7 @@ async function loadPoints(){
     .from("users")
     .insert({ id: userId, points: 0 })
     .select()
-    .maybeSingle();
+    .maybeSingle(); // ⭐重要
 
     setPoints(newUser?.points || 0);
     return;
@@ -63,7 +69,9 @@ async function loadPoints(){
   setPoints(data.points || 0);
 }
 
+// =====================
 // ピン押し
+// =====================
 function addPin(id,e){
 
   e.stopPropagation();
@@ -76,6 +84,7 @@ function addPin(id,e){
     return;
   }
 
+  // 既にピン済みなら無視
   if(pins[id]) return;
 
   const newPins = {
@@ -93,11 +102,16 @@ function addPin(id,e){
   setPinStock(newStock);
 }
 
+// =====================
+// 表示用
+// =====================
 function isActivePin(id){
   return !!pins[id];
 }
 
-// ピン順
+// =====================
+// 並び替え（ピン上）
+// =====================
 const filtered = characters
   .filter(c => c.name.includes(search))
   .sort((a,b)=>{
@@ -113,7 +127,8 @@ return(
   margin:"0 auto",
   minHeight:"100vh",
   background:"#ffeaf4",
-  padding:"10px"
+  padding:"10px",
+  boxSizing:"border-box"
 }}>
 
 {/* ヘッダー */}
@@ -123,11 +138,11 @@ return(
   alignItems:"center",
   marginBottom:"10px"
 }}>
-  <div>HOME</div>
-  <div onClick={()=>setMenuOpen(true)}>☰</div>
+  <div style={{fontWeight:"bold"}}>HOME</div>
+  <div onClick={()=>setMenuOpen(true)} style={{cursor:"pointer"}}>☰</div>
 </div>
 
-{/* ボタン */}
+{/* ボタン3つ */}
 <div style={{
   display:"flex",
   gap:"8px",
@@ -148,7 +163,7 @@ return(
 
 </div>
 
-{/* ポイント */}
+{/* ポイント＋ピン */}
 <div style={{marginBottom:"10px"}}>
 所持ポイント：{points}p ｜ 📌{pinStock}
 </div>
@@ -161,7 +176,7 @@ return(
   style={input}
 />
 
-{/* 一覧 */}
+{/* キャラ一覧 */}
 {filtered.map(c=>{
 
 const active = isActivePin(c.id);
@@ -178,7 +193,8 @@ style={{
   marginRight:"8px",
   fontSize:"18px",
   filter: active ? "none" : "grayscale(1)",
-  opacity: active ? 1 : 0.3
+  opacity: active ? 1 : 0.3,
+  cursor:"pointer"
 }}>
 📌
 </div>
@@ -205,13 +221,16 @@ style={{
 );
 }
 
+// =====================
 // スタイル
+// =====================
 const btn = {
 flex:1,
 padding:"8px",
 borderRadius:"10px",
 border:"1px solid #ccc",
-background:"#fff"
+background:"#fff",
+cursor:"pointer"
 };
 
 const input = {
@@ -219,7 +238,8 @@ width:"100%",
 padding:"10px",
 borderRadius:"10px",
 border:"1px solid #ccc",
-marginBottom:"10px"
+marginBottom:"10px",
+boxSizing:"border-box"
 };
 
 const card = {
@@ -229,4 +249,12 @@ background:"#fff",
 padding:"10px",
 borderRadius:"10px",
 marginBottom:"8px",
-cursor:"pointer
+cursor:"pointer"
+};
+
+const img = {
+width:"32px",
+height:"32px",
+borderRadius:"8px",
+marginRight:"8px"
+};
