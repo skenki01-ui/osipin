@@ -8,16 +8,17 @@ export default function Purchase() {
 
   const [point, setPoint] = useState<number>(0);
 
+  // 🔥 UUIDでゲストID作る
   const getGuestId = () => {
     let guestId = localStorage.getItem("guest_id");
     if (!guestId) {
-      guestId =
-        Math.random().toString(36).substring(2) + Date.now().toString(36);
+      guestId = crypto.randomUUID();
       localStorage.setItem("guest_id", guestId);
     }
     return guestId;
   };
 
+  // 🔥 ポイント取得（今は止める）
   const fetchPoint = async () => {
     const guestId = getGuestId();
 
@@ -32,14 +33,12 @@ export default function Purchase() {
     }
   };
 
+  // ❌ 一旦OFF（サーバー無いからエラー防止）
   useEffect(() => {
-    fetchPoint();
+    // fetchPoint();
   }, []);
 
   useEffect(() => {
-    // 🔥 SSR対策（これ重要）
-    if (typeof window === "undefined") return;
-
     if (payjpRef.current) return;
 
     const init = () => {
@@ -88,6 +87,8 @@ export default function Purchase() {
     const guestId = getGuestId();
 
     try {
+      // ❌ API通信一旦OFF
+      /*
       const res = await fetch("http://localhost:3001/api/charge", {
         method: "POST",
         headers: {
@@ -105,10 +106,14 @@ export default function Purchase() {
         alert("課金失敗: " + data.error);
         return;
       }
+      */
 
+      // ✅ 仮成功
       alert("課金成功！");
 
-      await fetchPoint();
+      // ❌ fetchPointも止める
+      // await fetchPoint();
+
     } catch (err) {
       alert("通信エラー");
     }
