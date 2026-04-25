@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/app.css"; // 🔥ここ修正（小文字）
 
 export default function Home() {
   const navigate = useNavigate();
@@ -18,59 +17,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container">
-      <div className="card">
-        <div className="sub">迷ったとき、流れを変える</div>
+    <div>
+      <h1>ひきよせ</h1>
 
-        <div className="title">ひきよせ</div>
+      <div>ポイント：{point}p</div>
 
-        <div className="point-label">現在のポイント</div>
-        <div className="point">{point}p</div>
-
-        <button className="btn" onClick={() => navigate("/result")}>
-          今日の運勢を見る
-        </button>
-
-        <div className="desc">
-          1日1回無料 / 2回目以降 10p
-          <br />
-          深掘り 10p
-          <br />
-          相談チャット 15p / 4ターン
-          <br />
-          フリーチャット 50p / 15ターン
-        </div>
-
-        <div style={{ marginTop: "20px" }}>
-          <div style={{ fontSize: "14px", marginBottom: "8px" }}>
-            友だちに紹介
-          </div>
-
-          <img
-            src="/qr.png"
-            alt="QRコード"
-            style={{
-              width: "160px",
-              height: "160px",
-              objectFit: "contain",
-            }}
-          />
-        </div>
-
-        <div
-          style={{
-            marginTop: "24px",
-            fontSize: "12px",
-            color: "#666",
-            textAlign: "center",
-          }}
-        >
-          <div onClick={() => navigate("/tokushoho")}>特定商取引法に基づく表記</div>
-          <div onClick={() => navigate("/terms")}>利用規約</div>
-          <div onClick={() => navigate("/privacy")}>プライバシーポリシー</div>
-          <div onClick={() => navigate("/contact")}>お問い合わせ</div>
-        </div>
-      </div>
+      <button onClick={() => navigate("/result")}>
+        今日の運勢を見る
+      </button>
     </div>
   );
 }
