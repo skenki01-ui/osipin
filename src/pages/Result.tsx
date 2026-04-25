@@ -49,21 +49,25 @@ export default function Result() {
   const [point, setPoint] = useState(0);
 
   useEffect(() => {
-    // 🔥 ポイント取得
     const p = localStorage.getItem("point");
     setPoint(p ? Number(p) : 0);
 
-    // 🔥 おみくじ
     const today = new Date();
     const key = `hikiyose_${today.getFullYear()}${today.getMonth()}${today.getDate()}`;
 
     const saved = localStorage.getItem(key);
 
     if (saved) {
-      const data = JSON.parse(saved);
-      setFortune(data.fortune);
-      setAdvice(data.advice);
-    } else {
+      try {
+        const data = JSON.parse(saved);
+        setFortune(data.fortune);
+        setAdvice(data.advice);
+      } catch {
+        localStorage.removeItem(key);
+      }
+    }
+
+    if (!saved) {
       const newFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
       const newAdvice = advices[Math.floor(Math.random() * advices.length)];
 
@@ -83,7 +87,6 @@ export default function Result() {
   return (
     <div className="container">
 
-      {/* 🔥 ヘッダー */}
       <div
         style={{
           display: "flex",
@@ -92,7 +95,6 @@ export default function Result() {
           marginBottom: "12px",
         }}
       >
-        {/* 戻る */}
         <div
           onClick={() => navigate("/home")}
           style={{ cursor: "pointer", fontSize: "18px" }}
@@ -100,12 +102,10 @@ export default function Result() {
           ◀︎
         </div>
 
-        {/* タイトル */}
         <div style={{ fontWeight: "bold" }}>
           結果
         </div>
 
-        {/* ポイント */}
         <div style={{ fontSize: "14px" }}>
           {point}p
         </div>
