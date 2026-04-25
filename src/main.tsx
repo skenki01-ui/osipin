@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import App from "./App";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <div style={{ color: "black", fontSize: "30px" }}>
-    強制表示OK
-  </div>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );
