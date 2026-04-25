@@ -1,3 +1,3 @@
 export default function App() {
-  return <div>Appだけ表示</div>;
+  return <div>ここは生きてる</div>;
 }
