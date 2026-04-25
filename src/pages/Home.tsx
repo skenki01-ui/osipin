@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/app.css";
+import "../styles/App.css";
 
 export default function Home() {
   const navigate = useNavigate();
   const [point, setPoint] = useState<number>(0);
 
   useEffect(() => {
-    // 🔥 ここだけ修正（初期ポイント付与）
     const saved = localStorage.getItem("point");
 
     if (!saved) {
@@ -16,7 +15,6 @@ export default function Home() {
     } else {
       setPoint(Number(saved));
     }
-    // 🔥 修正ここまで
   }, []);
 
   return (
