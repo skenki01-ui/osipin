@@ -41,21 +41,24 @@ export default function Home() {
           フリーチャット 50p / 15ターン
         </div>
 
-        <div style={{ marginTop: "20px" }}>
-          <div style={{ fontSize: "14px", marginBottom: "8px" }}>
-            友だちに紹介
-          </div>
+        {/* 🔥 QRは一旦無効化（原因切り分け） */}
+        {false && (
+          <div style={{ marginTop: "20px" }}>
+            <div style={{ fontSize: "14px", marginBottom: "8px" }}>
+              友だちに紹介
+            </div>
 
-          <img
-            src="/qr.png"
-            alt="QRコード"
-            style={{
-              width: "160px",
-              height: "160px",
-              objectFit: "contain",
-            }}
-          />
-        </div>
+            <img
+              src="/qr.png"
+              alt="QRコード"
+              style={{
+                width: "160px",
+                height: "160px",
+                objectFit: "contain",
+              }}
+            />
+          </div>
+        )}
 
         <div
           style={{
