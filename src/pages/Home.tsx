@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/App.css";
+import "../styles/app.css"; // 🔥ここ修正（小文字）
 
 export default function Home() {
   const navigate = useNavigate();
@@ -41,24 +41,21 @@ export default function Home() {
           フリーチャット 50p / 15ターン
         </div>
 
-        {/* 🔥 QRは一旦無効化（原因切り分け） */}
-        {false && (
-          <div style={{ marginTop: "20px" }}>
-            <div style={{ fontSize: "14px", marginBottom: "8px" }}>
-              友だちに紹介
-            </div>
-
-            <img
-              src="/qr.png"
-              alt="QRコード"
-              style={{
-                width: "160px",
-                height: "160px",
-                objectFit: "contain",
-              }}
-            />
+        <div style={{ marginTop: "20px" }}>
+          <div style={{ fontSize: "14px", marginBottom: "8px" }}>
+            友だちに紹介
           </div>
-        )}
+
+          <img
+            src="/qr.png"
+            alt="QRコード"
+            style={{
+              width: "160px",
+              height: "160px",
+              objectFit: "contain",
+            }}
+          />
+        </div>
 
         <div
           style={{
@@ -68,33 +65,10 @@ export default function Home() {
             textAlign: "center",
           }}
         >
-          <div
-            style={{ marginBottom: "6px", cursor: "pointer" }}
-            onClick={() => navigate("/tokushoho")}
-          >
-            特定商取引法に基づく表記
-          </div>
-
-          <div
-            style={{ marginBottom: "6px", cursor: "pointer" }}
-            onClick={() => navigate("/terms")}
-          >
-            利用規約
-          </div>
-
-          <div
-            style={{ marginBottom: "6px", cursor: "pointer" }}
-            onClick={() => navigate("/privacy")}
-          >
-            プライバシーポリシー
-          </div>
-
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/contact")}
-          >
-            お問い合わせ
-          </div>
+          <div onClick={() => navigate("/tokushoho")}>特定商取引法に基づく表記</div>
+          <div onClick={() => navigate("/terms")}>利用規約</div>
+          <div onClick={() => navigate("/privacy")}>プライバシーポリシー</div>
+          <div onClick={() => navigate("/contact")}>お問い合わせ</div>
         </div>
       </div>
     </div>
