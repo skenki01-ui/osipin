@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f5f6f8;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  padding: 20px;
+}
+.lock-status {
+  font-size: 28px;
+  font-weight: bold;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.locked {
+  background: #ffdddd;
+  color: #cc0000;
+}
+
+.unlocked {
+  background: #ddffdd;
+  color: #009900;
+}
+
+.lock-buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.lock-buttons button {
+  flex: 1;
+  padding: 20px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+}
+
+.unlock {
+  background: #007bff;
+  color: white;
+}
+
+.lock {
+  background: #ff4444;
+  color: white;
+}
+
+.key-buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+}
+
+.key-buttons button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+}
