@@ -1,4 +1,6 @@
 // src/components/QRModal.tsx
+import QRCode from "react-qr-code";
+
 export default function QRModal({
   visible,
   onClose,
@@ -10,45 +12,72 @@ export default function QRModal({
 }) {
   if (!visible) return null;
 
+  const unlockUrl = `${window.location.origin}/unlock?id=${keyData}`;
+
   return (
     <div
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
+        inset: 0,
         background: "rgba(0,0,0,0.6)",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        zIndex: 999
       }}
     >
       <div
         style={{
           background: "#fff",
-          padding: "20px",
-          borderRadius: "10px",
-          textAlign: "center"
+          padding: 24,
+          borderRadius: 12,
+          textAlign: "center",
+          width: 320
         }}
       >
-        <h3>QRキー</h3>
+        <h2 style={{ marginTop: 0 }}>QRキー</h2>
 
         <div
           style={{
-            width: "150px",
-            height: "150px",
-            background: "#eee",
-            margin: "20px auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
+            background: "#fff",
+            padding: 16,
+            display: "inline-block",
+            borderRadius: 8
           }}
         >
-          {keyData}
+          <QRCode value={unlockUrl} size={220} />
         </div>
 
-        <button onClick={onClose}>閉じる</button>
+        <p
+          style={{
+            marginTop: 16,
+            fontSize: 12,
+            color: "#555",
+            wordBreak: "break-all"
+          }}
+        >
+          {unlockUrl}
+        </p>
+
+        <p
+          style={{
+            marginTop: 8,
+            fontFamily: "monospace",
+            fontSize: 13
+          }}
+        >
+          ID: {keyData}
+        </p>
+
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: 16,
+            padding: "10px 20px"
+          }}
+        >
+          閉じる
+        </button>
       </div>
     </div>
   );

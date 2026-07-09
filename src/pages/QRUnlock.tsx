@@ -1,6 +1,6 @@
 // src/pages/QRUnlock.tsx
-import { useState } from "react";
-import { useKey } from "../lib/useKeys";
+import { useEffect, useState } from "react";
+import { useKey, validateKey } from "../lib/useKeys";
 import { unlock } from "../lib/useLocks";
 import { addLog } from "../lib/useLogs";
 import { generateId, getNow } from "../lib/utils";
@@ -9,10 +9,29 @@ export default function QRUnlock() {
   const [input, setInput] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleUnlock = () => {
-    if (!input) return;
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
-    useKey(input); // 使用済みにする
+    if (id) {
+      setInput(id);
+    }
+  }, []);
+
+  const handleUnlock = () => {
+    if (!input) {
+      setMessage("QRコードのIDを入力してください");
+      return;
+    }
+
+    const result = validateKey(input);
+
+    if (!result.ok) {
+      setMessage(result.reason);
+      return;
+    }
+
+    useKey(input);
     unlock();
 
     addLog({
